@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" font-family="Apple SD Gothic Neo, Pretendard, sans-serif">
+  <defs>
+    <!-- 배경 그라데이션: ink 톤 -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B0E14" />
+      <stop offset="1" stop-color="#141A2B" />
+    </linearGradient>
+    <!-- 브랜드 블루 글로우 -->
+    <radialGradient id="glow" cx="0.78" cy="0.18" r="0.7">
+      <stop offset="0" stop-color="#3563ff" stop-opacity="0.45" />
+      <stop offset="0.55" stop-color="#3563ff" stop-opacity="0.08" />
+      <stop offset="1" stop-color="#3563ff" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5a8bff" />
+      <stop offset="1" stop-color="#1f43f5" />
+    </linearGradient>
+  </defs>
+
+  <!-- 배경 -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#glow)" />
+
+  <!-- 미세 그리드 (운영 도구/빌더 느낌) -->
+  <g stroke="#5a8bff" stroke-opacity="0.06" stroke-width="1">
+    <path d="M0 158 H1200 M0 316 H1200 M0 474 H1200" />
+    <path d="M300 0 V630 M600 0 V630 M900 0 V630" />
+  </g>
+
+  <!-- 브랜드 라인 (좌측 액센트) -->
+  <rect x="0" y="0" width="8" height="630" fill="#3563ff" />
+
+  <!-- 로고 마크 + 워드마크 -->
+  <g transform="translate(96, 92)">
+    <rect width="72" height="72" rx="18" fill="url(#mark)" />
+    <text x="36" y="52" font-size="44" font-weight="800" fill="#ffffff" text-anchor="middle">w</text>
+    <text x="96" y="50" font-size="38" font-weight="700" fill="#e7edff" letter-spacing="-0.5">wretool</text>
+  </g>
+
+  <!-- 헤드라인 -->
+  <text x="96" y="312" font-size="104" font-weight="800" fill="#ffffff" letter-spacing="-2">뤼튼판 <tspan fill="#5a8bff">Retool</tspan></text>
+
+  <!-- 서브 헤드라인 -->
+  <text x="100" y="398" font-size="56" font-weight="700" fill="#c3d0ee" letter-spacing="-1">사내 운영 도구 빌더</text>
+
+  <!-- 하단 태그라인 칩 -->
+  <g transform="translate(96, 470)" font-size="30" font-weight="600">
+    <g>
+      <rect x="0" y="0" width="206" height="58" rx="29" fill="#3563ff" fill-opacity="0.14" stroke="#3563ff" stroke-opacity="0.4" />
+      <text x="103" y="39" fill="#9db8ff" text-anchor="middle">데이터 연결</text>
+    </g>
+    <g transform="translate(226, 0)">
+      <rect x="0" y="0" width="206" height="58" rx="29" fill="#3563ff" fill-opacity="0.14" stroke="#3563ff" stroke-opacity="0.4" />
+      <text x="103" y="39" fill="#9db8ff" text-anchor="middle">드래그 조립</text>
+    </g>
+    <g transform="translate(452, 0)">
+      <rect x="0" y="0" width="206" height="58" rx="29" fill="#3563ff" fill-opacity="0.14" stroke="#3563ff" stroke-opacity="0.4" />
+      <text x="103" y="39" fill="#9db8ff" text-anchor="middle">즉시 배포</text>
+    </g>
+  </g>
+
+  <!-- 우하단 도메인 -->
+  <text x="1104" y="560" font-size="28" font-weight="600" fill="#5b6b8c" text-anchor="end">leon-wrtn.github.io/wretool-landing</text>
+</svg>
