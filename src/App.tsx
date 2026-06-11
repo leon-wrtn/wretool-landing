@@ -1,4 +1,6 @@
 import { useState, type FormEvent } from "react";
+import { FORM_ENDPOINT, CONVERSION_EVENT } from "./config";
+import { trackEvent } from "./analytics";
 
 // ─────────────────────────────────────────────────────────────
 // wretool 랜딩페이지
@@ -454,21 +456,53 @@ function Contact() {
   );
 }
 
+type SubmitStatus = "idle" | "submitting" | "success" | "error";
+
 function Waitlist() {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<SubmitStatus>("idle");
   const [error, setError] = useState("");
 
-  function handleSubmit(e: FormEvent) {
+  const submitting = status === "submitting";
+  const submitted = status === "success";
+
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (submitting) return;
+
     const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!valid) {
       setError("올바른 이메일 주소를 입력해주세요.");
+      setStatus("error");
       return;
     }
+
     setError("");
-    // TODO: 백엔드/폼 연동 (예: Formspree, 자체 API). 현재는 클라이언트 확인만.
-    setSubmitted(true);
+    setStatus("submitting");
+
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          _subject: "wretool 대기자 신규 등록",
+          source: "wretool-landing",
+        }),
+      });
+
+      if (!res.ok) throw new Error(`submit failed: ${res.status}`);
+
+      setStatus("success");
+      // 전환 이벤트 집계 (대기자 등록 성공)
+      trackEvent("Waitlist Signup", CONVERSION_EVENT);
+    } catch {
+      setStatus("error");
+      setError("등록 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+    }
   }
 
   return (
@@ -500,13 +534,15 @@ function Waitlist() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@company.com"
                 aria-label="이메일 주소"
-                className="w-full rounded-full border border-white/15 bg-white/5 px-5 py-3 text-white placeholder:text-slate-500 focus:border-brand-400 focus:outline-none"
+                disabled={submitting}
+                className="w-full rounded-full border border-white/15 bg-white/5 px-5 py-3 text-white placeholder:text-slate-500 focus:border-brand-400 focus:outline-none disabled:opacity-60"
               />
               <button
                 type="submit"
-                className="shrink-0 rounded-full bg-brand-500 px-7 py-3 font-medium text-white transition hover:bg-brand-400"
+                disabled={submitting}
+                className="shrink-0 rounded-full bg-brand-500 px-7 py-3 font-medium text-white transition hover:bg-brand-400 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                등록하기
+                {submitting ? "등록 중…" : "등록하기"}
               </button>
             </form>
           )}
