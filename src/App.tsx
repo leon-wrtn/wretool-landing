@@ -530,7 +530,17 @@ function Waitlist() {
         }),
       });
 
-      if (!res.ok) throw new Error(`submit failed: ${res.status}`);
+      // FormSubmit/Formspree 류 AJAX 폼 서비스는 실패(미활성화·봇 차단·검증 오류)
+      // 시에도 HTTP 200 을 주고 본문의 success:"false" / errors 로만 실패를 알린다.
+      // 따라서 상태코드뿐 아니라 응답 본문까지 확인해야 정확한 성공/실패 처리가 된다.
+      const data = (await res.json().catch(() => null)) as
+        | { success?: unknown; errors?: unknown }
+        | null;
+      const rejected =
+        !res.ok ||
+        (data != null &&
+          (String(data.success) === "false" || Boolean(data.errors)));
+      if (rejected) throw new Error("submit rejected");
 
       rememberRegistered(value);
       setStatus("success");
