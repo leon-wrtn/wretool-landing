@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"WRE2_ID=\\\"6ae52428-5472-4fab-9c57-38594d6c6797\\\"\\npaperclipai issue force-release \\\"$WRE2_ID\\\" --api-base \\\"$PAPERCLIP_API_URL\\\" --json 2>&1\"}",
+  "error": "Exit code 1\nAPI error 403: Board access required",
+  "timestamp": "2026-06-11T04:51:11.761Z",
+  "retry_count": 3
+}
