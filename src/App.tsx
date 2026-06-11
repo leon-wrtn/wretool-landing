@@ -517,13 +517,14 @@ function Waitlist() {
     setStatus("submitting");
 
     try {
+      // form-urlencoded 로 전송한다. JSON 대신 폼 인코딩을 쓰는 이유:
+      //  1) FormSubmit 은 JSON 본문일 때 활성화/검증 흐름이 깨진다(폼 인코딩에서 정상 동작).
+      //  2) "단순 요청"이라 CORS preflight(OPTIONS)가 발생하지 않아 더 견고하다.
+      //  3) Formspree 등 다른 폼 서비스도 동일하게 폼 인코딩을 받는다(provider 무관).
       const res = await fetch(FORM_ENDPOINT, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
+        headers: { Accept: "application/json" },
+        body: new URLSearchParams({
           email: value,
           _subject: "wretool 대기자 신규 등록",
           source: "wretool-landing",
