@@ -458,6 +458,34 @@ function Contact() {
 
 type SubmitStatus = "idle" | "submitting" | "success" | "error";
 
+// 이미 등록한 이메일을 브라우저에 기억해 새로고침 후 중복 제출을 막는다.
+const WAITLIST_STORAGE_KEY = "wretool:waitlist:emails";
+
+function loadRegistered(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(WAITLIST_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as string[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function rememberRegistered(email: string) {
+  if (typeof window === "undefined") return;
+  try {
+    const list = loadRegistered();
+    if (!list.includes(email)) {
+      window.localStorage.setItem(
+        WAITLIST_STORAGE_KEY,
+        JSON.stringify([...list, email]),
+      );
+    }
+  } catch {
+    // 저장 실패는 등록 흐름을 막지 않도록 무시
+  }
+}
+
 function Waitlist() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<SubmitStatus>("idle");
@@ -470,10 +498,18 @@ function Waitlist() {
     e.preventDefault();
     if (submitting) return;
 
-    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const value = email.trim().toLowerCase();
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
     if (!valid) {
       setError("올바른 이메일 주소를 입력해주세요.");
       setStatus("error");
+      return;
+    }
+
+    // 이미 이 브라우저에서 등록한 이메일이면 재요청 없이 성공으로 처리
+    if (loadRegistered().includes(value)) {
+      setError("");
+      setStatus("success");
       return;
     }
 
@@ -488,7 +524,7 @@ function Waitlist() {
           Accept: "application/json",
         },
         body: JSON.stringify({
-          email,
+          email: value,
           _subject: "wretool 대기자 신규 등록",
           source: "wretool-landing",
         }),
@@ -496,6 +532,7 @@ function Waitlist() {
 
       if (!res.ok) throw new Error(`submit failed: ${res.status}`);
 
+      rememberRegistered(value);
       setStatus("success");
       // 전환 이벤트 집계 (대기자 등록 성공)
       trackEvent("Waitlist Signup", CONVERSION_EVENT);
